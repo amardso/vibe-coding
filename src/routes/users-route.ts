@@ -36,4 +36,21 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
         Password: t.String(),
       }),
     }
+  )
+  .get(
+    '/current',
+    async ({ headers, set }) => {
+      try {
+        const authHeader = headers['authorization'];
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          throw new Error('Unauthorized!');
+        }
+
+        const token = authHeader.split(' ')[1];
+        return await UsersService.getCurrentUser(token);
+      } catch (error: any) {
+        set.status = 401;
+        return { Error: error.message };
+      }
+    }
   );
