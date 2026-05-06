@@ -1,11 +1,10 @@
 import { db } from '../db';
-import { users } from '../db/schema';
+import { users, sessions } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 
 export class UsersService {
   static async registerUser(data: { Name: string; Email: string; Password: string }) {
-    // 1. Check if email already exists
     const existingUser = await db
       .select()
       .from(users)
@@ -16,10 +15,8 @@ export class UsersService {
       throw new Error('Email sudah terdaftar');
     }
 
-    // 2. Hash password
     const hashedPassword = await bcrypt.hash(data.Password, 10);
 
-    // 3. Insert user
     await db.insert(users).values({
       name: data.Name,
       email: data.Email,
@@ -27,5 +24,37 @@ export class UsersService {
     });
 
     return { Data: 'OK' };
+  }
+
+  static async loginUser(data: { Email: string; Password: string }) {
+    // 1. Find user by email
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, data.Email))
+      .limit(1);
+
+    if (user.length === 0) {
+      throw new Error('Email atau Password salah!');
+    }
+
+    // 2. Verify password
+    const isPasswordCorrect = await bcrypt.compare(data.Password, user[0].password);
+
+    if (!isPasswordCorrect) {
+      throw new Error('Email atau Password salah!');
+    }
+
+    // 3. Generate token
+    const token = crypto.randomUUID();
+
+    // 4. Create session
+    await db.insert(sessions).values({
+      token,
+      name: 'Web Login',
+      userId: user[0].id,
+    });
+
+    return { Data: token };
   }
 }

@@ -8,6 +8,20 @@
       "when": 1778054406321,
       "tag": "0000_right_black_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1778059595112,
+      "tag": "0001_shocking_hedge_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1778059652881,
+      "tag": "0002_lyrical_radioactive_man",
+      "breakpoints": true
     }
   ]
 }
