@@ -101,6 +101,13 @@ Sistem ini menyimpan data ke dalam 2 relasi tabel:
 - **Deskripsi**: Menghapus sesi / token yang valid secara permanen dari database.
 - **Response Sukses**: `200 OK` `{"Data": "OK"}`
 
+## Dokumentasi API (Swagger UI)
+Aplikasi ini sudah dilengkapi dengan dokumentasi interaktif menggunakan Swagger UI. Developer dapat melihat skema request/response, tipe data, serta melakukan uji coba endpoint secara langsung dari browser.
+
+**Cara Mengakses:**
+1. Jalankan aplikasi (`bun run dev`).
+2. Buka browser dan akses alamat: **[http://localhost:3000/swagger](http://localhost:3000/swagger)**.
+
 ## Cara Setup Project
 1. Lakukan kloning repositori ke komputer Anda.
 2. Pastikan file variabel lingkungan (`.env`) sudah diatur dengan benar (sesuaikan dengan isi `.env.example` jika ada, dan pastikan `DATABASE_URL` mengarah pada instance database lokal).
