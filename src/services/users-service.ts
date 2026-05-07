@@ -91,4 +91,22 @@ export class UsersService {
       },
     };
   }
+
+  static async logout(token: string) {
+    // 1. Find session by token
+    const session = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.token, token))
+      .limit(1);
+
+    if (session.length === 0) {
+      throw new Error('Unauthorized!');
+    }
+
+    // 2. Delete session
+    await db.delete(sessions).where(eq(sessions.token, token));
+
+    return { Data: 'OK' };
+  }
 }
