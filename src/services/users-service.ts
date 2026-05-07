@@ -2,6 +2,7 @@ import { db } from '../db';
 import { users, sessions } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
+import { ResponseError } from '../exceptions/response-error';
 
 export class UsersService {
   static async registerUser(data: { Name: string; Email: string; Password: string }) {
@@ -12,7 +13,7 @@ export class UsersService {
       .limit(1);
 
     if (existingUser.length > 0) {
-      throw new Error('Email sudah terdaftar');
+      throw new ResponseError(400, 'Email sudah terdaftar');
     }
 
     const hashedPassword = await bcrypt.hash(data.Password, 10);
@@ -35,14 +36,14 @@ export class UsersService {
       .limit(1);
 
     if (user.length === 0) {
-      throw new Error('Email atau Password salah!');
+      throw new ResponseError(401, 'Email atau Password salah!');
     }
 
     // 2. Verify password
     const isPasswordCorrect = await bcrypt.compare(data.Password, user[0].password);
 
     if (!isPasswordCorrect) {
-      throw new Error('Email atau Password salah!');
+      throw new ResponseError(401, 'Email atau Password salah!');
     }
 
     // 3. Generate token
@@ -67,7 +68,7 @@ export class UsersService {
       .limit(1);
 
     if (session.length === 0) {
-      throw new Error('Unauthorized!');
+      throw new ResponseError(401, 'Unauthorized!');
     }
 
     // 2. Find user by id from session
@@ -78,7 +79,7 @@ export class UsersService {
       .limit(1);
 
     if (user.length === 0) {
-      throw new Error('Unauthorized!');
+      throw new ResponseError(401, 'Unauthorized!');
     }
 
     // 3. Return user data (excluding password)
@@ -90,5 +91,23 @@ export class UsersService {
         Created_at: user[0].createdAt,
       },
     };
+  }
+
+  static async logout(token: string) {
+    // 1. Find session by token
+    const session = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.token, token))
+      .limit(1);
+
+    if (session.length === 0) {
+      throw new ResponseError(401, 'Unauthorized!');
+    }
+
+    // 2. Delete session
+    await db.delete(sessions).where(eq(sessions.token, token));
+
+    return { Data: 'OK' };
   }
 }
