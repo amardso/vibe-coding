@@ -11,7 +11,11 @@ const extractToken = (headers: Record<string, string | undefined>) => {
 };
 
 export const usersRoute = new Elysia({ prefix: '/api/users' })
-  .onError(({ error, set }) => {
+  .onError(({ code, error, set }) => {
+    if (code === 'VALIDATION') {
+      set.status = 400;
+      return { Error: error.message };
+    }
     if (error instanceof ResponseError) {
       set.status = error.status;
       return { Error: error.message };
@@ -26,9 +30,9 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
     },
     {
       body: t.Object({
-        Name: t.String(),
-        Email: t.String(),
-        Password: t.String(),
+        Name: t.String({ maxLength: 255 }),
+        Email: t.String({ maxLength: 255 }),
+        Password: t.String({ maxLength: 255 }),
       }),
     }
   )
