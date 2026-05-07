@@ -34,6 +34,11 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
         Email: t.String({ maxLength: 255 }),
         Password: t.String({ maxLength: 255 }),
       }),
+      detail: {
+        summary: 'Registrasi Pengguna Baru',
+        description: 'Mendaftarkan pengguna baru dengan Name, Email, dan Password.',
+        tags: ['Users'],
+      },
     }
   )
   .post(
@@ -46,6 +51,11 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
         Email: t.String(),
         Password: t.String(),
       }),
+      detail: {
+        summary: 'Login Pengguna',
+        description: 'Melakukan login dan mendapatkan token autentikasi.',
+        tags: ['Users'],
+      },
     }
   )
   .get(
@@ -58,6 +68,11 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
       headers: t.Object({
         authorization: t.String(),
       }),
+      detail: {
+        summary: 'Ambil Profil Pengguna',
+        description: 'Mendapatkan data profil pengguna yang sedang login.',
+        tags: ['Users'],
+      },
     }
   )
   .delete(
@@ -70,5 +85,10 @@ export const usersRoute = new Elysia({ prefix: '/api/users' })
       headers: t.Object({
         authorization: t.String(),
       }),
+      detail: {
+        summary: 'Logout Pengguna',
+        description: 'Menghapus sesi login pengguna saat ini.',
+        tags: ['Users'],
+      },
     }
   );
