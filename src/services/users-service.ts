@@ -5,6 +5,14 @@ import bcrypt from 'bcrypt';
 import { ResponseError } from '../exceptions/response-error';
 
 export class UsersService {
+  /**
+   * Mendaftarkan pengguna baru ke dalam sistem.
+   * Melakukan pengecekan duplikasi email dan melakukan hashing pada password sebelum disimpan.
+   *
+   * @param data - Objek yang berisi Name, Email, dan Password pengguna baru.
+   * @returns Objek dengan pesan sukses { Data: 'OK' } jika berhasil.
+   * @throws {ResponseError} Jika email sudah terdaftar.
+   */
   static async registerUser(data: { Name: string; Email: string; Password: string }) {
     const existingUser = await db
       .select()
@@ -27,6 +35,14 @@ export class UsersService {
     return { Data: 'OK' };
   }
 
+  /**
+   * Melakukan proses autentikasi pengguna.
+   * Memeriksa keberadaan email dan mencocokkan password. Jika valid, akan membuat sesi baru dan mengembalikan token.
+   *
+   * @param data - Objek yang berisi Email dan Password pengguna.
+   * @returns Objek yang berisi token sesi { Data: '<uuid-token>' }.
+   * @throws {ResponseError} Jika email tidak ditemukan atau password salah.
+   */
   static async loginUser(data: { Email: string; Password: string }) {
     // 1. Find user by email
     const user = await db
@@ -59,6 +75,14 @@ export class UsersService {
     return { Data: token };
   }
 
+  /**
+   * Mengambil data profil pengguna yang sedang login berdasarkan token sesi.
+   * Memvalidasi token dan mengembalikan data pengguna tanpa menyertakan password.
+   *
+   * @param token - Bearer token dari header otorisasi.
+   * @returns Objek data pengguna { Data: { id, Name, Email, Created_at } }.
+   * @throws {ResponseError} Jika token tidak valid atau pengguna tidak ditemukan.
+   */
   static async getCurrentUser(token: string) {
     // 1. Find session by token
     const session = await db
@@ -93,6 +117,14 @@ export class UsersService {
     };
   }
 
+  /**
+   * Mengakhiri sesi pengguna saat ini.
+   * Memvalidasi token dan menghapus data sesi dari database agar token tidak dapat digunakan lagi.
+   *
+   * @param token - Bearer token dari header otorisasi yang akan dihapus.
+   * @returns Objek dengan pesan sukses { Data: 'OK' } jika berhasil.
+   * @throws {ResponseError} Jika token tidak ditemukan di database.
+   */
   static async logout(token: string) {
     // 1. Find session by token
     const session = await db
